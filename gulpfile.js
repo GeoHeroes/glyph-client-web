@@ -9,6 +9,8 @@ var server = require('gulp-server-livereload');
 var concat = require('gulp-concat');
 var sass = require('gulp-sass');
 var watch = require('gulp-watch');
+var babel = require('gulp-babel');
+var sourcemaps = require('gulp-sourcemaps');
 
 var notify = function(error) {
   var message = 'In: ';
@@ -32,6 +34,7 @@ var notify = function(error) {
   notifier.notify({title: title, message: message});
 };
 
+
 var bundler = watchify(browserify({
   entries: ['./src/app.jsx'],
   transform: [reactify],
@@ -53,6 +56,9 @@ bundler.on('update', bundle)
 
 gulp.task('build', function() {
   bundle()
+  gulp.src('main.js')
+  .pipe(babel())
+  .pipe(gulp.dest('./'))
 });
 
 gulp.task('serve', function(done) {
