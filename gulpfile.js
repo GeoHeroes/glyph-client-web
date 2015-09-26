@@ -49,22 +49,22 @@ function bundle() {
   return bundler
     .bundle()
     .on('error', notify)
-    .pipe(source('main.js'))
+    .pipe(source('./public/main.js'))
     .pipe(gulp.dest('./'))
 }
 bundler.on('update', bundle)
 
 gulp.task('build', function() {
   bundle()
-  gulp.src('main.js')
+  gulp.src('./public/main.js')
   .pipe(babel())
   .pipe(gulp.dest('./'))
 });
 
 gulp.task('serve', function(done) {
-  gulp.src('')
+  gulp.src('public')
     .pipe(server({
-      livereload: {
+	livereload: {
         enable: true,
         filter: function(filePath, cb) {
           if(/main.js/.test(filePath)) {
@@ -82,7 +82,7 @@ gulp.task('sass', function () {
   gulp.src('./sass/**/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(concat('style.css'))
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./public'));
 });
 
 gulp.task('default', ['build', 'serve', 'sass', 'watch']);
