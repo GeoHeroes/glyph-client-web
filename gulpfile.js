@@ -58,7 +58,7 @@ gulp.task('build', function() {
   bundle()
   gulp.src('./public/main.js')
   .pipe(babel())
-  .pipe(gulp.dest('./'))
+  .pipe(gulp.dest('./public'))
 });
 
 gulp.task('serve', function(done) {
