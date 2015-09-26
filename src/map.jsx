@@ -4,10 +4,12 @@ var DynamicForm = require('./DynamicForm');
 var Map = React.createClass({
 
   getInitialState: function() {
+    console.log(process.env);
     return {
       map: null,
       location: null,
-      markers: null
+      markers: null,
+      serverAddress: process.env.SERVER_ADDRESS || 'http://127.0.0.1:3000'
     }
   },
 
@@ -25,7 +27,6 @@ var Map = React.createClass({
       map = this.createMap(location);
       this.setState({location: location});
       this.setState({map: map});
-      // this.createGlyph();
       this.getGlyphs(this.renderGlyphs, true);
       this.renderUserGlyph(location);
     }.bind(this));
@@ -48,7 +49,7 @@ var Map = React.createClass({
 
   getGlyphs: function(callback) {
     $.ajax({
-      url: 'http://127.0.0.1:3000/api/findGlyphsRadius',
+      url: this.state.serverAddress + '/api/findGlyphsRadius',
       method: 'POST',
       data: JSON.stringify({
         latitude: this.state.location.latitude,
@@ -109,7 +110,7 @@ var Map = React.createClass({
 
   createGlyph: function(latitude, longitude, data, callback) {
     $.ajax.call(this, {
-      url: 'http://127.0.0.1:3000/api/createGlyph',
+      url: this.state.serverAddress + '/api/createGlyph',
       method: 'POST',
       data: JSON.stringify({
         latitude: latitude || this.state.location.latitude,
