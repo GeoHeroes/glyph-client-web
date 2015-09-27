@@ -4,12 +4,12 @@ var DynamicForm = require('./DynamicForm');
 var Map = React.createClass({
 
   getInitialState: function() {
-    console.log(process.env);
+    console.log(process.env.SERVER_ADDRESS);
     return {
       map: null,
       location: null,
       markers: null,
-      serverAddress: process.env.SERVER_ADDRESS || 'http://127.0.0.1:3000'
+      serverAddress: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com'
     }
   },
 

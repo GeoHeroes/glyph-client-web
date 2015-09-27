@@ -11,6 +11,7 @@ var sass = require('gulp-sass');
 var watch = require('gulp-watch');
 var babel = require('gulp-babel');
 var sourcemaps = require('gulp-sourcemaps');
+var exit = require('gulp-exit');
 
 var notify = function(error) {
   var message = 'In: ';
@@ -57,7 +58,6 @@ bundler.on('update', bundle)
 gulp.task('build', function() {
   bundle()
   gulp.src('./public/main.js')
-  .pipe(babel())
   .pipe(gulp.dest('./public'))
 });
 
