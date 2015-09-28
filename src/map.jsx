@@ -120,6 +120,7 @@ var Map = React.createClass({
       radius: 700
     });
 
+    // Another circle that animates a "pulse"
     var userLocationPulse = new google.maps.Circle({
       strokeColor: 'LightBlue',
       strokeWeight: 2,
@@ -129,6 +130,8 @@ var Map = React.createClass({
       radius: 700
     });
 
+    // Helper functions that animate the circles and update their
+    // rendering when the zoom of the map is changed
     circleDraw.radiusOnZoom(map, userLocationDot);
     circleDraw.animateOnZoom(map, userLocationPulse);
   },
