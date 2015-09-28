@@ -42,7 +42,7 @@ var DynamicForm = React.createClass({
     }
 
     $.ajax.call(this, {
-      url: 'http://127.0.0.1:3000' + '/api/createGlyph',
+      url: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com' + '/api/createGlyph',
       method: 'POST',
       data: JSON.stringify({
         latitude: this.props.coordinates.latitude,

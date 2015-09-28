@@ -9,7 +9,7 @@ var Map = React.createClass({
       map: null,
       location: null,
       markers: [],
-      serverAddress: 'http://127.0.0.1:3000'
+      serverAddress: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com'
     }
   },
 
@@ -41,53 +41,6 @@ var Map = React.createClass({
     //map event listeners go here
 
   },
-
-  // dropMarker: function(map) {
-  //    // This event listener will call addMarker() when the map is clicked.
-  //   google.maps.event.addListener(map, 'click', function(event) {
-  //     this.addMarker(event.latLng);
-  //   }.bind(this));
-  // },
-
-  // addMarker: function(location) {
-  //   var marker = new google.maps.Marker({
-  //     position: location,
-  //     map: this.state.map
-  //   });
-  //   this.setState({markers: this.state.markers.concat([marker])});
-  // },
-
-  ////////////////////////////////////////////////
-  ////// Helper Methods for the map markers //////
-  ////////////////////////////////////////////////
-
-  // // Sets the map on all markers in the array.
-  // setAllMap: function(map) {
-  //   var markers = this.state.markers;
-  //   var map = this.state.map;
-  //   for (var i = 0; i < markers.length; i++) {
-  //     markers[i].setMap(map);
-  //   }
-  // },
-
-  // // Removes the markers from the map, but keeps them in the array.
-  // clearMarkers: function() {
-  //   this.setAllMap(null);
-  // },
-
-  // // Shows any markers currently in the array.
-  // showMarkers: function() {
-  //   var map = this.state.map;
-  //   this.setAllMap(map);
-  // },
-
-  // // Deletes all markers in the array by removing references to them.
-  // deleteMarkers: function() {
-  //   this.clearMarkers();
-  //   this.setState({
-  //     markers: []
-  //   });
-  // },
 
   createMap: function(location) {
     var mapOptions = {
@@ -265,13 +218,62 @@ var Map = React.createClass({
 
     marker.addListener('click', function() {
       this.props.showSubmitGlyphModal(latitude, longitude);
-      // clickWindow.open(map, marker);
-      // dataInput.render('.data-input');
-      // $('#save-glyph-button').on('click', function() {
-      //   this.createGlyph(latitude, longitude, dataInput.data());
-      // }.bind(this));
     }.bind(this));
   } 
 });
 
 module.exports = Map;
+
+
+  // dropMarker: function(map) {
+  //    // This event listener will call addMarker() when the map is clicked.
+  //   google.maps.event.addListener(map, 'click', function(event) {
+  //     this.addMarker(event.latLng);
+  //   }.bind(this));
+  // },
+
+  // addMarker: function(location) {
+  //   var marker = new google.maps.Marker({
+  //     position: location,
+  //     map: this.state.map
+  //   });
+  //   this.setState({markers: this.state.markers.concat([marker])});
+  // },
+
+  ////////////////////////////////////////////////
+  ////// Helper Methods for the map markers //////
+  ////////////////////////////////////////////////
+
+  // // Sets the map on all markers in the array.
+  // setAllMap: function(map) {
+  //   var markers = this.state.markers;
+  //   var map = this.state.map;
+  //   for (var i = 0; i < markers.length; i++) {
+  //     markers[i].setMap(map);
+  //   }
+  // },
+
+  // // Removes the markers from the map, but keeps them in the array.
+  // clearMarkers: function() {
+  //   this.setAllMap(null);
+  // },
+
+  // // Shows any markers currently in the array.
+  // showMarkers: function() {
+  //   var map = this.state.map;
+  //   this.setAllMap(map);
+  // },
+
+  // // Deletes all markers in the array by removing references to them.
+  // deleteMarkers: function() {
+  //   this.clearMarkers();
+  //   this.setState({
+  //     markers: []
+  //   });
+  // },
+
+        // clickWindow.open(map, marker);
+      // dataInput.render('.data-input');
+      // $('#save-glyph-button').on('click', function() {
+      //   this.createGlyph(latitude, longitude, dataInput.data());
+      // }.bind(this));
