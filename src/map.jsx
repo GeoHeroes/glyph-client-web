@@ -1,15 +1,15 @@
 var React = require('react');
 var DynamicForm = require('./DynamicForm');
+var circleDraw = require('./helpers/circleDraw');
 
 var Map = React.createClass({
 
   getInitialState: function() {
-    console.log(process.env.SERVER_ADDRESS);
     return {
       map: null,
       location: null,
       markers: null,
-      serverAddress: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com'
+      serverAddress: 'http://127.0.0.1:3000'
     }
   },
 
@@ -29,6 +29,7 @@ var Map = React.createClass({
       this.setState({map: map});
       this.getGlyphs(this.renderGlyphs, true);
       this.renderUserGlyph(location);
+      this.renderUserLocation(map, location);
     }.bind(this));
 
     // Not sure this is necessary
@@ -106,6 +107,30 @@ var Map = React.createClass({
     navigator.geolocation.getCurrentPosition(function(location) {
       callback(location.coords);
     });
+  },
+
+  renderUserLocation: function(map, location) {
+    // Append the users location as a circle to the map
+    var userLocationDot = new google.maps.Circle({
+      strokeOpacity: 0,
+      fillOpacity: 1,
+      fillColor: 'blue',
+      map: map,
+      center: {lat: location.latitude, lng: location.longitude},
+      radius: 700
+    });
+
+    var userLocationPulse = new google.maps.Circle({
+      strokeColor: 'LightBlue',
+      strokeWeight: 2,
+      fillOpacity: 0,
+      map: map,
+      center: {lat: location.latitude, lng: location.longitude},
+      radius: 700
+    });
+
+    circleDraw.radiusOnZoom(map, userLocationDot);
+    circleDraw.animateOnZoom(map, userLocationPulse);
   },
 
   createGlyph: function(latitude, longitude, data, callback) {
