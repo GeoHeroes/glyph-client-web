@@ -8,7 +8,7 @@ var App = React.createClass({
   },
 
   componentDidMount: function() {
-    this.showModal();
+    // this.showModal();
   },
 
   render: function() {
@@ -18,7 +18,7 @@ var App = React.createClass({
       </h1>
       <Map latitude={25} longitude={25}></Map>
       <Modal ref="modal" id="modal">
-        <h1> Yolo Motherfucker! </h1>
+        <h1>Hello World!</h1>
       </Modal>
     </div>
   }
