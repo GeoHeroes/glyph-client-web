@@ -91,15 +91,6 @@ var Map = React.createClass({
         hoverWindow.close(map, marker);
       });
 
-      var clickWindow = new google.maps.InfoWindow({
-        // We can put any DOM node here.
-        content: '<div>Name: ' + glyph.name + '</div> <div>We can put even MORE info in here</div>'
-      });
-
-      marker.addListener('click', function() {
-        clickWindow.open(map, marker);
-      });
-
     }.bind(this));
   },
 
