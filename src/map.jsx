@@ -55,6 +55,11 @@ var Map = React.createClass({
     // Set the map controls to render in the to left position of the map.
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+      searchBox.setBounds(map.getBounds());
+    });
+
     return map;
   },
 
