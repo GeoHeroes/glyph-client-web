@@ -8,16 +8,19 @@ var Map = React.createClass({
     return {
       map: null,
       location: null,
-      markers: null,
-      serverAddress: 'http://127.0.0.1:3000'
+      markers: [],
+      serverAddress: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com'
     }
   },
 
   render: function() {
-    return <div id="map-container">
-      <div ref="mapRef" id="map-canvas">
+    return (
+      <div id="map-container">
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box" />
+        <div ref="mapRef" id="map-canvas">
+        </div>
       </div>
-    </div>
+    );
   },
 
   componentDidMount: function() {
@@ -36,7 +39,55 @@ var Map = React.createClass({
     window.addEventListener("resize", function() {google.maps.event.trigger(map, 'resize')});
 
     //map event listeners go here
+
   },
+
+  // dropMarker: function(map) {
+  //    // This event listener will call addMarker() when the map is clicked.
+  //   google.maps.event.addListener(map, 'click', function(event) {
+  //     this.addMarker(event.latLng);
+  //   }.bind(this));
+  // },
+
+  // addMarker: function(location) {
+  //   var marker = new google.maps.Marker({
+  //     position: location,
+  //     map: this.state.map
+  //   });
+  //   this.setState({markers: this.state.markers.concat([marker])});
+  // },
+
+  ////////////////////////////////////////////////
+  ////// Helper Methods for the map markers //////
+  ////////////////////////////////////////////////
+
+  // // Sets the map on all markers in the array.
+  // setAllMap: function(map) {
+  //   var markers = this.state.markers;
+  //   var map = this.state.map;
+  //   for (var i = 0; i < markers.length; i++) {
+  //     markers[i].setMap(map);
+  //   }
+  // },
+
+  // // Removes the markers from the map, but keeps them in the array.
+  // clearMarkers: function() {
+  //   this.setAllMap(null);
+  // },
+
+  // // Shows any markers currently in the array.
+  // showMarkers: function() {
+  //   var map = this.state.map;
+  //   this.setAllMap(map);
+  // },
+
+  // // Deletes all markers in the array by removing references to them.
+  // deleteMarkers: function() {
+  //   this.clearMarkers();
+  //   this.setState({
+  //     markers: []
+  //   });
+  // },
 
   createMap: function(location) {
     var mapOptions = {
@@ -45,7 +96,35 @@ var Map = React.createClass({
       center: new google.maps.LatLng(location.latitude, location.longitude)
     }
 
-    return new google.maps.Map(this.refs.mapRef.getDOMNode(), mapOptions);
+    var map = new google.maps.Map(this.refs.mapRef.getDOMNode(), mapOptions);
+  
+    var input = document.getElementById('pac-input');
+    // Create autocomplete and link it to the UI element.
+    var autocomplete = new google.maps.places.Autocomplete(input);
+
+    // Set the map controls to render in the to left position of the map.
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    // SearchBox is initialized as hidden, until google maps is loaded.
+    google.maps.event.addListenerOnce(map, 'idle', function() {
+      $('#pac-input').css('display', 'block');
+    });
+
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+      searchBox.setBounds(map.getBounds());
+    });
+
+    autocomplete.addListener('place_changed', function() { 
+      var newPlace = autocomplete.getPlace();
+
+      new google.maps.Marker({
+        map: map,
+        position: newPlace.geometry.location
+      });
+    });
+
+    return map;
   },
 
   getGlyphs: function(callback) {
