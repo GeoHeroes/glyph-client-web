@@ -58,6 +58,38 @@ var Map = React.createClass({
     this.setState({markers: this.state.markers.concat([marker])});
   },
 
+  ////////////////////////////////////////////////
+  ////// Helper Methods for the map markers //////
+  ////////////////////////////////////////////////
+
+  // Sets the map on all markers in the array.
+  setAllMap: function(map) {
+    var markers = this.state.markers;
+    var map = this.state.map;
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+    }
+  },
+
+  // Removes the markers from the map, but keeps them in the array.
+  clearMarkers: function() {
+    this.setAllMap(null);
+  },
+
+  // Shows any markers currently in the array.
+  showMarkers: function() {
+    var map = this.state.map;
+    this.setAllMap(map);
+  },
+
+  // Deletes all markers in the array by removing references to them.
+  deleteMarkers: function() {
+    this.clearMarkers();
+    this.setState({
+      markers: []
+    });
+  },
+
   createMap: function(location) {
     var mapOptions = {
       draggable: true,
