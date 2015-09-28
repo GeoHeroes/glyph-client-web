@@ -14,10 +14,13 @@ var Map = React.createClass({
   },
 
   render: function() {
-    return <div id="map-container">
-      <div ref="mapRef" id="map-canvas">
+    return (
+      <div id="map-container">
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box" />
+        <div ref="mapRef" id="map-canvas">
+        </div>
       </div>
-    </div>
+    );
   },
 
   componentDidMount: function() {
@@ -44,7 +47,15 @@ var Map = React.createClass({
       center: new google.maps.LatLng(location.latitude, location.longitude)
     }
 
-    return new google.maps.Map(this.refs.mapRef.getDOMNode(), mapOptions);
+    var map = new google.maps.Map(this.refs.mapRef.getDOMNode(), mapOptions);
+  
+    // Create the search box and link it to the UI element.
+    var input = document.getElementById('pac-input');
+    var searchBox = new google.maps.places.SearchBox(input);
+    // Set the map controls to render in the to left position of the map.
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    return map;
   },
 
   getGlyphs: function(callback) {
