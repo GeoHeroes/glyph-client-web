@@ -9,7 +9,7 @@ var Map = React.createClass({
       map: null,
       location: null,
       markers: [],
-      serverAddress: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com'
+      serverAddress: 'http://127.0.0.1:3000'
     }
   },
 
@@ -112,7 +112,7 @@ var Map = React.createClass({
 
     // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', function() {
-      searchBox.setBounds(map.getBounds());
+      autocomplete.setBounds(map.getBounds());
     });
 
     autocomplete.addListener('place_changed', function() { 
@@ -162,13 +162,26 @@ var Map = React.createClass({
         content: glyphInfo[0]
       });
 
-      marker.addListener('mouseover', function() {
-        hoverWindow.open(map, marker);
-      });
+      // marker.addListener('mouseover', function() {
+      //   hoverWindow.open(map, marker);
+      // });
 
-      marker.addListener('mouseout', function() {
-        hoverWindow.close(map, marker);
-      });
+      // marker.addListener('mouseout', function() {
+      //   hoverWindow.close(map, marker);
+      // });
+      marker.addListener('click', function() {
+        // var glyphInfo = $('<div></div>');
+        // for (var key in glyph.data) {
+        //   glyphInfo.append('<div>' + key + ': ' + glyph.data[key] + '</div>');
+        // }
+        dataArray = [];
+        for (var key in glyph.data) {
+          dataArray.push({key: key, data: glyph.data[key]});
+        }
+
+        this.props.setModalContents(dataArray);
+        this.props.showModal();
+      }.bind(this));
 
     }.bind(this));
   },
@@ -251,11 +264,12 @@ var Map = React.createClass({
     });
 
     marker.addListener('click', function() {
-      clickWindow.open(map, marker);
-      dataInput.render('.data-input');
-      $('#save-glyph-button').on('click', function() {
-        this.createGlyph(latitude, longitude, dataInput.data());
-      }.bind(this));
+      this.props.showSubmitGlyphModal(latitude, longitude);
+      // clickWindow.open(map, marker);
+      // dataInput.render('.data-input');
+      // $('#save-glyph-button').on('click', function() {
+      //   this.createGlyph(latitude, longitude, dataInput.data());
+      // }.bind(this));
     }.bind(this));
   } 
 });
