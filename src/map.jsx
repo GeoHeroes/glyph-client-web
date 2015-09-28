@@ -8,7 +8,7 @@ var Map = React.createClass({
     return {
       map: null,
       location: null,
-      markers: null,
+      markers: [],
       serverAddress: 'http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com'
     }
   },
@@ -32,12 +32,30 @@ var Map = React.createClass({
       this.setState({map: map});
       this.getGlyphs(this.renderGlyphs, true);
       this.renderUserGlyph(location);
+      this.dropMarker(map);
     }.bind(this));
 
     // Not sure this is necessary
     window.addEventListener("resize", function() {google.maps.event.trigger(map, 'resize')});
 
     //map event listeners go here
+
+
+  },
+
+  dropMarker: function(map) {
+     // This event listener will call addMarker() when the map is clicked.
+    google.maps.event.addListener(map, 'click', function(event) {
+      this.addMarker(event.latLng);
+    }.bind(this));
+  },
+
+  addMarker: function(location) {
+    var marker = new google.maps.Marker({
+      position: location,
+      map: this.state.map
+    });
+    this.setState({markers: this.state.markers.concat([marker])});
   },
 
   createMap: function(location) {
