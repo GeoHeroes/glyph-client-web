@@ -1,10 +1,10 @@
 var React = require('react');
 var DynamicForm = require('./DynamicForm');
+var circleDraw = require('./helpers/circleDraw');
 
 var Map = React.createClass({
 
   getInitialState: function() {
-    console.log(process.env.SERVER_ADDRESS);
     return {
       map: null,
       location: null,
@@ -32,7 +32,7 @@ var Map = React.createClass({
       this.setState({map: map});
       this.getGlyphs(this.renderGlyphs, true);
       this.renderUserGlyph(location);
-      // this.dropMarker(map);
+      this.renderUserLocation(map, location);
     }.bind(this));
 
     // Not sure this is necessary
@@ -41,53 +41,6 @@ var Map = React.createClass({
     //map event listeners go here
 
   },
-
-  // dropMarker: function(map) {
-  //    // This event listener will call addMarker() when the map is clicked.
-  //   google.maps.event.addListener(map, 'click', function(event) {
-  //     this.addMarker(event.latLng);
-  //   }.bind(this));
-  // },
-
-  // addMarker: function(location) {
-  //   var marker = new google.maps.Marker({
-  //     position: location,
-  //     map: this.state.map
-  //   });
-  //   this.setState({markers: this.state.markers.concat([marker])});
-  // },
-
-  ////////////////////////////////////////////////
-  ////// Helper Methods for the map markers //////
-  ////////////////////////////////////////////////
-
-  // // Sets the map on all markers in the array.
-  // setAllMap: function(map) {
-  //   var markers = this.state.markers;
-  //   var map = this.state.map;
-  //   for (var i = 0; i < markers.length; i++) {
-  //     markers[i].setMap(map);
-  //   }
-  // },
-
-  // // Removes the markers from the map, but keeps them in the array.
-  // clearMarkers: function() {
-  //   this.setAllMap(null);
-  // },
-
-  // // Shows any markers currently in the array.
-  // showMarkers: function() {
-  //   var map = this.state.map;
-  //   this.setAllMap(map);
-  // },
-
-  // // Deletes all markers in the array by removing references to them.
-  // deleteMarkers: function() {
-  //   this.clearMarkers();
-  //   this.setState({
-  //     markers: []
-  //   });
-  // },
 
   createMap: function(location) {
     var mapOptions = {
@@ -112,7 +65,7 @@ var Map = React.createClass({
 
     // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', function() {
-      searchBox.setBounds(map.getBounds());
+      autocomplete.setBounds(map.getBounds());
     });
 
     autocomplete.addListener('place_changed', function() { 
@@ -162,22 +115,26 @@ var Map = React.createClass({
         content: glyphInfo[0]
       });
 
-      marker.addListener('mouseover', function() {
-        hoverWindow.open(map, marker);
-      });
+      // marker.addListener('mouseover', function() {
+      //   hoverWindow.open(map, marker);
+      // });
 
-      marker.addListener('mouseout', function() {
-        hoverWindow.close(map, marker);
-      });
-
-      var clickWindow = new google.maps.InfoWindow({
-        // We can put any DOM node here.
-        content: '<div>Name: ' + glyph.name + '</div> <div>We can put even MORE info in here</div>'
-      });
-
+      // marker.addListener('mouseout', function() {
+      //   hoverWindow.close(map, marker);
+      // });
       marker.addListener('click', function() {
-        clickWindow.open(map, marker);
-      });
+        // var glyphInfo = $('<div></div>');
+        // for (var key in glyph.data) {
+        //   glyphInfo.append('<div>' + key + ': ' + glyph.data[key] + '</div>');
+        // }
+        dataArray = [];
+        for (var key in glyph.data) {
+          dataArray.push({key: key, data: glyph.data[key]});
+        }
+
+        this.props.setModalContents(dataArray);
+        this.props.showModal();
+      }.bind(this));
 
     }.bind(this));
   },
@@ -186,6 +143,33 @@ var Map = React.createClass({
     navigator.geolocation.getCurrentPosition(function(location) {
       callback(location.coords);
     });
+  },
+
+  renderUserLocation: function(map, location) {
+    // Append the users location as a circle to the map
+    var userLocationDot = new google.maps.Circle({
+      strokeOpacity: 0,
+      fillOpacity: 1,
+      fillColor: 'blue',
+      map: map,
+      center: {lat: location.latitude, lng: location.longitude},
+      radius: 700
+    });
+
+    // Another circle that animates a "pulse"
+    var userLocationPulse = new google.maps.Circle({
+      strokeColor: 'LightBlue',
+      strokeWeight: 2,
+      fillOpacity: 0,
+      map: map,
+      center: {lat: location.latitude, lng: location.longitude},
+      radius: 700
+    });
+
+    // Helper functions that animate the circles and update their
+    // rendering when the zoom of the map is changed
+    circleDraw.radiusOnZoom(map, userLocationDot);
+    circleDraw.animateOnZoom(map, userLocationPulse);
   },
 
   createGlyph: function(latitude, longitude, data, callback) {
@@ -233,13 +217,63 @@ var Map = React.createClass({
     });
 
     marker.addListener('click', function() {
-      clickWindow.open(map, marker);
-      dataInput.render('.data-input');
-      $('#save-glyph-button').on('click', function() {
-        this.createGlyph(latitude, longitude, dataInput.data());
-      }.bind(this));
+      this.props.showSubmitGlyphModal(latitude, longitude);
     }.bind(this));
   } 
 });
 
 module.exports = Map;
+
+
+  // dropMarker: function(map) {
+  //    // This event listener will call addMarker() when the map is clicked.
+  //   google.maps.event.addListener(map, 'click', function(event) {
+  //     this.addMarker(event.latLng);
+  //   }.bind(this));
+  // },
+
+  // addMarker: function(location) {
+  //   var marker = new google.maps.Marker({
+  //     position: location,
+  //     map: this.state.map
+  //   });
+  //   this.setState({markers: this.state.markers.concat([marker])});
+  // },
+
+  ////////////////////////////////////////////////
+  ////// Helper Methods for the map markers //////
+  ////////////////////////////////////////////////
+
+  // // Sets the map on all markers in the array.
+  // setAllMap: function(map) {
+  //   var markers = this.state.markers;
+  //   var map = this.state.map;
+  //   for (var i = 0; i < markers.length; i++) {
+  //     markers[i].setMap(map);
+  //   }
+  // },
+
+  // // Removes the markers from the map, but keeps them in the array.
+  // clearMarkers: function() {
+  //   this.setAllMap(null);
+  // },
+
+  // // Shows any markers currently in the array.
+  // showMarkers: function() {
+  //   var map = this.state.map;
+  //   this.setAllMap(map);
+  // },
+
+  // // Deletes all markers in the array by removing references to them.
+  // deleteMarkers: function() {
+  //   this.clearMarkers();
+  //   this.setState({
+  //     markers: []
+  //   });
+  // },
+
+        // clickWindow.open(map, marker);
+      // dataInput.render('.data-input');
+      // $('#save-glyph-button').on('click', function() {
+      //   this.createGlyph(latitude, longitude, dataInput.data());
+      // }.bind(this));
